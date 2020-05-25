@@ -5,6 +5,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.theprogrammingturkey.happyhearts.HappyHeartsCore;
+import com.theprogrammingturkey.happyhearts.client.Config;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.JsonToNBT;
 import net.minecraft.util.text.TextFormatting;
@@ -25,6 +26,10 @@ public class CustomDecosRegistry
 	public static void init()
 	{
 		userDecos.clear();
+
+		if(!Config.customDecos.get())
+			return;
+
 		JsonArray json = getCustomDecos();
 		for(JsonElement elem : json)
 		{
