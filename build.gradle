@@ -13,6 +13,12 @@ apply plugin: 'net.minecraftforge.gradle'
 apply plugin: 'eclipse'
 apply plugin: 'maven-publish'
 
+ext.buildnumber = 0
+if (System.getenv('BUILD_NUMBER') != null)
+    project.buildnumber = System.getenv('BUILD_NUMBER')
+else
+    logger.lifecycle "No build number detected, setting to 0"
+
 version= "${mc_version}-${mod_version}.${buildnumber}"
 group = 'com.theprogrammingturkey.happyhearts'
 archivesBaseName = 'HappyHearts'
