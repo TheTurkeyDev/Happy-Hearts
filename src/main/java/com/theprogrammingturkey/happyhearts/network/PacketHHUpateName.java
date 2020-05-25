@@ -1,4 +1,4 @@
-package com.theprogrammingturkey.happyhearts;
+package com.theprogrammingturkey.happyhearts.network;
 
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.PacketBuffer;

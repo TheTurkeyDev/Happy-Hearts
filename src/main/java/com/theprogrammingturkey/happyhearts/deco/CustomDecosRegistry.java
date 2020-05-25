@@ -1,11 +1,13 @@
-package com.theprogrammingturkey.happyhearts;
+package com.theprogrammingturkey.happyhearts.deco;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.theprogrammingturkey.happyhearts.HappyHeartsCore;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.JsonToNBT;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fml.ModList;
 
 import java.io.BufferedReader;
@@ -18,57 +20,73 @@ import java.util.Map;
 
 public class CustomDecosRegistry
 {
-	private static Map<String, Map<String, CustomDeco>> userDecos = new HashMap<>();
-
-	private static final String[] displaySlots = {"right_hand", "left_hand", "hat", "front"};
+	private static Map<String, PlayerDeco> userDecos = new HashMap<>();
 
 	public static void init()
 	{
+		userDecos.clear();
 		JsonArray json = getCustomDecos();
 		for(JsonElement elem : json)
 		{
-			Map<String, CustomDeco> decos = new HashMap<>();
+			PlayerDeco deco = new PlayerDeco();
 			JsonObject decoJson = elem.getAsJsonObject();
 
-			String username = decoJson.get("username").getAsString();
-
-			for(String slot : displaySlots)
+			String username = decoJson.get("username").getAsString().toLowerCase();
+			if(decoJson.has("name_color"))
 			{
-				try
+				TextFormatting format = TextFormatting.fromFormattingCode(decoJson.get("name_color").getAsString().charAt(0));
+				if(format != null)
+					deco.nameStyle.setColor(format);
+			}
+
+			if(decoJson.has("items"))
+			{
+				for(JsonElement slot : decoJson.get("items").getAsJsonArray())
 				{
-					if(decoJson.has(slot))
+					try
 					{
-						JsonObject slotJson = decoJson.getAsJsonObject(slot);
+						JsonObject slotJson = slot.getAsJsonObject();
 						CustomDeco dispSlot = new CustomDeco();
 						dispSlot.stack = ItemStack.read(JsonToNBT.getTagFromJson(slotJson.getAsJsonObject("item").toString()));
+						dispSlot.stack.setCount(1);
 						dispSlot.translation = jsonObjectToFloats(slotJson.getAsJsonObject("translation"));
 						dispSlot.rotation = jsonObjectToFloats(slotJson.getAsJsonObject("rotation"));
 						dispSlot.scale = jsonObjectToFloats(slotJson.getAsJsonObject("scale"));
 
-						decos.put(slot, dispSlot);
+						deco.decos.add(dispSlot);
+					} catch(Exception e)
+					{
+						e.printStackTrace();
 					}
-				} catch(Exception e)
-				{
-					e.printStackTrace();
 				}
 			}
 
-
-			userDecos.put(username.toLowerCase(), decos);
+			if(userDecos.containsKey(username))
+			{
+				userDecos.get(username).nameStyle = deco.nameStyle;
+				userDecos.get(username).decos.addAll(deco.decos);
+			}
+			else
+			{
+				userDecos.put(username, deco);
+			}
 		}
 	}
 
-	public static Map<String, CustomDeco> getDecosForUserName(String username)
+	public static PlayerDeco getDecosForUserName(String username)
 	{
-		return userDecos.getOrDefault(username.toLowerCase(), new HashMap<>());
+		return userDecos.getOrDefault(username.toLowerCase(), new PlayerDeco());
 	}
 
 	private static float[] jsonObjectToFloats(JsonObject json)
 	{
 		float[] floats = new float[3];
-		floats[0] = json.get("x").getAsFloat();
-		floats[1] = json.get("y").getAsFloat();
-		floats[2] = json.get("z").getAsFloat();
+		if(json != null)
+		{
+			floats[0] = json.get("x").getAsFloat();
+			floats[1] = json.get("y").getAsFloat();
+			floats[2] = json.get("z").getAsFloat();
+		}
 		return floats;
 	}
 
@@ -105,13 +123,5 @@ public class CustomDecosRegistry
 		{
 			return new JsonArray();
 		}
-	}
-
-	public static class CustomDeco
-	{
-		public ItemStack stack = ItemStack.EMPTY;
-		public float[] translation = new float[3];
-		public float[] rotation = new float[3];
-		public float[] scale = new float[3];
 	}
 }

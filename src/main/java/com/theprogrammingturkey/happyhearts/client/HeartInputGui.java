@@ -1,5 +1,8 @@
-package com.theprogrammingturkey.happyhearts;
+package com.theprogrammingturkey.happyhearts.client;
 
+import com.theprogrammingturkey.happyhearts.HappyHeartsCore;
+import com.theprogrammingturkey.happyhearts.block.HeartTE;
+import com.theprogrammingturkey.happyhearts.network.PacketHHUpateName;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.TextFieldWidget;
@@ -17,7 +20,7 @@ public class HeartInputGui extends Screen
 	private TextFieldWidget rewardField;
 	private HeartTE heartTE;
 
-	protected HeartInputGui(HeartTE heartTE)
+	public HeartInputGui(HeartTE heartTE)
 	{
 		super(new StringTextComponent("Happy Heart"));
 		this.heartTE = heartTE;

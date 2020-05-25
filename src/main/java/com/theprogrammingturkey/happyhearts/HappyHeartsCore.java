@@ -1,16 +1,20 @@
 package com.theprogrammingturkey.happyhearts;
 
+import com.theprogrammingturkey.happyhearts.block.HeartBlock;
+import com.theprogrammingturkey.happyhearts.block.HeartTE;
+import com.theprogrammingturkey.happyhearts.client.ClientProxy;
+import com.theprogrammingturkey.happyhearts.network.PacketHHUpateName;
 import net.minecraft.block.Block;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.client.registry.ClientRegistry;
+import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.fml.network.FMLNetworkConstants;
@@ -32,10 +36,8 @@ public class HappyHeartsCore
 
 	public HappyHeartsCore()
 	{
-		FMLJavaModLoadingContext.get().getModEventBus().addListener(this::onClientStart);
+		DistExecutor.runWhenOn(Dist.CLIENT, () -> () -> ClientProxy.initClientStuff());
 		FMLJavaModLoadingContext.get().getModEventBus().addListener(this::onCommonStart);
-
-		CustomDecosRegistry.init();
 	}
 
 	@SubscribeEvent
@@ -56,12 +58,6 @@ public class HappyHeartsCore
 		Item theItemBlock = new BlockItem(HEART, (new Item.Properties()).group(ItemGroup.DECORATIONS));
 		theItemBlock.setRegistryName(HEART.getRegistryName());
 		e.getRegistry().register(theItemBlock);
-	}
-
-	@SubscribeEvent
-	public void onClientStart(FMLClientSetupEvent event)
-	{
-		ClientRegistry.bindTileEntitySpecialRenderer(HeartTE.class, new HeartTERenderer());
 	}
 
 	@SubscribeEvent

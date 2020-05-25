@@ -1,5 +1,6 @@
-package com.theprogrammingturkey.happyhearts;
+package com.theprogrammingturkey.happyhearts.block;
 
+import com.theprogrammingturkey.happyhearts.HappyHeartsCore;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SUpdateTileEntityPacket;
