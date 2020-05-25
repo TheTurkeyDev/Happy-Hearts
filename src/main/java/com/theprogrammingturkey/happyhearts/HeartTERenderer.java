@@ -48,7 +48,7 @@ public class HeartTERenderer extends TileEntityRenderer<HeartTE>
 		//Left "Hand"
 		if(decos.containsKey("left_hand"))
 		{
-			CustomDecosRegistry.CustomDeco lh = decos.get("right_hand");
+			CustomDecosRegistry.CustomDeco lh = decos.get("left_hand");
 			GlStateManager.pushMatrix();
 			GlStateManager.translatef(-0.1f + lh.translation[0], 0.1f + lh.translation[1], 0.51f + lh.translation[2]);
 			GlStateManager.rotatef(lh.rotation[0], 1.0F, 0.0F, 0.0F);
