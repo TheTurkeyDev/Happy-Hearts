@@ -1,0 +1,11 @@
+{
+  "forge_marker": 1,
+  "defaults": { "model": "happyhearts:block/heart"
+  },
+  "variants": {
+    "facing=north": { "model": "happyhearts:block/heart" },
+    "facing=south": { "model": "happyhearts:block/heart", "y": 180 },
+    "facing=west": { "model": "happyhearts:block/heart", "y": 270 },
+    "facing=east": { "model": "happyhearts:block/heart", "y": 90 }
+  }
+}

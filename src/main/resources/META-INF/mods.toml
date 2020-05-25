@@ -1,0 +1,13 @@
+modLoader="javafml"
+loaderVersion="[28,)"
+issueTrackerURL="http://my.issue.tracker/"
+[[mods]]
+modId="happyhearts"
+version="${file.jarVersion}"
+displayName="Happy Hearts"
+displayURL="http://example.com/"
+logoFile="examplemod.png"
+authors="Turkey2349"
+description='''
+Simply Happy Hearts!
+'''
