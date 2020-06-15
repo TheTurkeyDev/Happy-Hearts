@@ -17,6 +17,7 @@ public class HeartTE extends TileEntity implements INameable
 {
 	private String username = "";
 	private TextFormatting color = TextFormatting.WHITE;
+	private int blockColor = 0xC73C9D;
 
 	public HeartTE()
 	{
@@ -40,11 +41,22 @@ public class HeartTE extends TileEntity implements INameable
 		this.username = name;
 	}
 
+	public int getHeartColor()
+	{
+		return blockColor;
+	}
+
+	public void setHeartColor(int color)
+	{
+		this.blockColor = color;
+	}
+
 	@Override
 	public CompoundNBT write(CompoundNBT compound)
 	{
 		super.write(compound);
 		compound.putString("name", this.username);
+		compound.putInt("color", this.blockColor);
 		return compound;
 	}
 
@@ -53,6 +65,7 @@ public class HeartTE extends TileEntity implements INameable
 	{
 		super.read(compound);
 		this.username = compound.getString("name");
+		this.blockColor = compound.getInt("color");
 	}
 
 	@Nullable

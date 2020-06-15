@@ -9,9 +9,11 @@ import net.minecraft.block.Block;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.client.event.ColorHandlerEvent;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.DistExecutor;
@@ -62,6 +64,22 @@ public class HappyHeartsCore
 		Item theItemBlock = new BlockItem(HEART, (new Item.Properties()).group(ItemGroup.DECORATIONS));
 		theItemBlock.setRegistryName(HEART.getRegistryName());
 		e.getRegistry().register(theItemBlock);
+	}
+
+	@SubscribeEvent
+	public static void onColorRegistry(ColorHandlerEvent.Block event)
+	{
+		event.getBlockColors().register((state, world, pos, p_getColor_4_) ->
+		{
+			int color = 0xC73C9D;
+			if(world != null && pos != null)
+			{
+				TileEntity te = world.getTileEntity(pos);
+				if(te instanceof HeartTE)
+					return ((HeartTE) te).getHeartColor();
+			}
+			return color;
+		}, HEART);
 	}
 
 	@SubscribeEvent

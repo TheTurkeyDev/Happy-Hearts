@@ -7,9 +7,17 @@ import com.theprogrammingturkey.happyhearts.deco.CustomDeco;
 import com.theprogrammingturkey.happyhearts.deco.CustomDecosRegistry;
 import com.theprogrammingturkey.happyhearts.deco.PlayerDeco;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.BlockRendererDispatcher;
+import net.minecraft.client.renderer.RenderHelper;
+import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.model.ItemCameraTransforms;
 import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.util.Direction;
+import net.minecraft.world.World;
+import org.lwjgl.opengl.GL11;
+
+import java.util.Random;
 
 public class HeartTERenderer extends TileEntityRenderer<HeartTE>
 {
@@ -21,6 +29,7 @@ public class HeartTERenderer extends TileEntityRenderer<HeartTE>
 		if(!tile.getNameRaw().isEmpty())
 			this.drawNameplate(tile, tile.getDisplayName().setStyle(playerDeco.nameStyle).getFormattedText(), x, y - 0.1, z, 12);
 
+		// Heart Item rendering
 		Direction facing = tile.getBlockState().get(HeartBlock.FACING);
 
 		GlStateManager.pushMatrix();
