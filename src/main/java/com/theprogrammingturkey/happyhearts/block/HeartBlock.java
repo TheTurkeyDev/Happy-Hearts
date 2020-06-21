@@ -10,6 +10,7 @@ import net.minecraft.block.material.MaterialColor;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.BlockItemUseContext;
 import net.minecraft.particles.ParticleTypes;
+import net.minecraft.state.BooleanProperty;
 import net.minecraft.state.DirectionProperty;
 import net.minecraft.state.StateContainer;
 import net.minecraft.tileentity.TileEntity;
@@ -35,6 +36,8 @@ import java.util.List;
 public class HeartBlock extends Block
 {
 	public static final DirectionProperty FACING = HorizontalBlock.HORIZONTAL_FACING;
+	//This works. I wish I didn't have too...
+	public static final BooleanProperty TOGGLE = BooleanProperty.create("toggle");
 
 	public final VoxelShape NS_SHAPE;
 	public final VoxelShape WE_SHAPE;
@@ -43,7 +46,7 @@ public class HeartBlock extends Block
 	{
 		super(Properties.create(Material.EARTH, MaterialColor.PINK).hardnessAndResistance(0.5f));
 		this.setRegistryName(HappyHeartsCore.MODID, "heart");
-		this.setDefaultState(this.stateContainer.getBaseState().with(FACING, Direction.NORTH));
+		this.setDefaultState(this.stateContainer.getBaseState().with(FACING, Direction.NORTH).with(TOGGLE, false));
 		NS_SHAPE = this.generateShape(true);
 		WE_SHAPE = this.generateShape(false);
 	}
@@ -131,6 +134,11 @@ public class HeartBlock extends Block
 	}
 
 	@Override
+	public boolean func_220074_n(BlockState state) {
+		return true;
+	}
+
+	@Override
 	public BlockState rotate(BlockState state, Rotation rot)
 	{
 		return state.with(FACING, rot.rotate(state.get(FACING)));
@@ -145,7 +153,7 @@ public class HeartBlock extends Block
 	@Override
 	protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder)
 	{
-		builder.add(FACING);
+		builder.add(FACING).add(TOGGLE);
 	}
 
 }

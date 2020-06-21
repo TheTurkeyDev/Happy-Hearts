@@ -1,5 +1,7 @@
 package com.theprogrammingturkey.happyhearts.network;
 
+import com.theprogrammingturkey.happyhearts.block.HeartBlock;
+import net.minecraft.block.BlockState;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.tileentity.TileEntity;
@@ -40,7 +42,8 @@ public class PacketHHUpateName
 			if(te != null)
 			{
 				te.read(msg.nbt);
-				world.notifyBlockUpdate(msg.pos, te.getBlockState(), te.getBlockState(), 3);
+				BlockState current = world.getBlockState(te.getPos());
+				world.setBlockState(te.getPos(), current.with(HeartBlock.TOGGLE, !current.get(HeartBlock.TOGGLE)));
 			}
 		});
 		ctx.get().setPacketHandled(true);
