@@ -14,7 +14,7 @@ import net.minecraft.state.BooleanProperty;
 import net.minecraft.state.DirectionProperty;
 import net.minecraft.state.StateContainer;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.BlockRenderLayer;
+import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Direction;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Mirror;
@@ -106,36 +106,21 @@ public class HeartBlock extends Block
 	}
 
 	@Override
-	public BlockRenderLayer getRenderLayer()
+	public ActionResultType onBlockActivated(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand handIn, BlockRayTraceResult p_225533_6_)
 	{
-		return BlockRenderLayer.CUTOUT_MIPPED;
-	}
+		TileEntity te = world.getTileEntity(pos);
 
-	@Override
-	public boolean onBlockActivated(BlockState state, World worldIn, BlockPos pos, PlayerEntity player, Hand handIn, BlockRayTraceResult hit)
-	{
-		TileEntity te = worldIn.getTileEntity(pos);
-
-		if(worldIn.isRemote() && te instanceof HeartTE && player.isSneaking())
-		{
-			DistExecutor.runWhenOn(Dist.CLIENT, () -> () -> ClientProxy.openNameInputGUI((HeartTE) te));
-		}
+		if(world.isRemote() && te instanceof HeartTE && player.isSneaking())
+			DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> ClientProxy.openNameInputGUI((HeartTE) te));
 		else
-		{
-			worldIn.addParticle(ParticleTypes.HEART, pos.getX() + Math.random(), pos.getY() + Math.random(), pos.getZ() + Math.random(), 0, 1, 0);
-		}
-		return true;
+			world.addParticle(ParticleTypes.HEART, pos.getX() + Math.random(), pos.getY() + Math.random(), pos.getZ() + Math.random(), 0, 1, 0);
+		return ActionResultType.PASS;
 	}
 
 	@Override
 	public BlockState getStateForPlacement(BlockItemUseContext context)
 	{
 		return this.getDefaultState().with(FACING, context.getPlacementHorizontalFacing().getOpposite());
-	}
-
-	@Override
-	public boolean func_220074_n(BlockState state) {
-		return true;
 	}
 
 	@Override

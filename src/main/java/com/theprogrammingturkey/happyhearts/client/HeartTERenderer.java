@@ -1,63 +1,86 @@
 package com.theprogrammingturkey.happyhearts.client;
 
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.matrix.MatrixStack;
 import com.theprogrammingturkey.happyhearts.block.HeartBlock;
 import com.theprogrammingturkey.happyhearts.block.HeartTE;
 import com.theprogrammingturkey.happyhearts.deco.CustomDeco;
 import com.theprogrammingturkey.happyhearts.deco.CustomDecosRegistry;
 import com.theprogrammingturkey.happyhearts.deco.PlayerDeco;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.BlockRendererDispatcher;
-import net.minecraft.client.renderer.RenderHelper;
-import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.renderer.IRenderTypeBuffer;
+import net.minecraft.client.renderer.Matrix4f;
+import net.minecraft.client.renderer.Vector3f;
 import net.minecraft.client.renderer.model.ItemCameraTransforms;
 import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.Direction;
-import net.minecraft.world.World;
-import org.lwjgl.opengl.GL11;
-
-import java.util.Random;
 
 public class HeartTERenderer extends TileEntityRenderer<HeartTE>
 {
+	public HeartTERenderer(TileEntityRendererDispatcher teRenderer)
+	{
+		super(teRenderer);
+	}
+
 	@Override
-	public void render(HeartTE tile, double x, double y, double z, float partialTicks, int destroyStage)
+	public void render(HeartTE tile, float v, MatrixStack matrixStack, IRenderTypeBuffer bufferIn, int combinedLightIn, int combinedOverlayIn)
 	{
 		PlayerDeco playerDeco = CustomDecosRegistry.getDecosForUserName(tile.getNameRaw());
 
 		if(!tile.getNameRaw().isEmpty())
-			this.drawNameplate(tile, tile.getDisplayName().setStyle(playerDeco.nameStyle).getFormattedText(), x, y - 0.1, z, 12);
+			this.drawNameplate(tile, tile.getDisplayName().setStyle(playerDeco.nameStyle).getFormattedText(), matrixStack, bufferIn, combinedLightIn);
 
 		// Heart Item rendering
 		Direction facing = tile.getBlockState().get(HeartBlock.FACING);
 
-		GlStateManager.pushMatrix();
-		double d0 = (double) tile.getPos().getX() - tile.getPos().getX() + x;
-		double d1 = (double) tile.getPos().getY() - tile.getPos().getY() + y;
-		double d2 = (double) tile.getPos().getZ() - tile.getPos().getZ() + z;
-		GlStateManager.translated(d0 + 0.5D, d1 + 0.5D, d2 + 0.5D);
-		GlStateManager.rotatef(getRotAdj(facing), 0.0F, 1.0F, 0.0F);
-		GlStateManager.enableLighting();
-
-		GlStateManager.pushMatrix();
-		GlStateManager.rotatef(90, 0.0F, 1.0F, 0.0F);
+		matrixStack.push();
+		double d0 = (double) tile.getPos().getX() - tile.getPos().getX();
+		double d1 = (double) tile.getPos().getY() - tile.getPos().getY();
+		double d2 = (double) tile.getPos().getZ() - tile.getPos().getZ();
+		matrixStack.translate(d0 + 0.5D, d1 + 0.5D, d2 + 0.5D);
+		matrixStack.rotate(Vector3f.YP.rotationDegrees(getRotAdj(facing)));
+		matrixStack.rotate(Vector3f.YP.rotationDegrees(90));
 
 		for(CustomDeco deco : playerDeco.decos)
 		{
-			GlStateManager.pushMatrix();
-			GlStateManager.translatef(deco.translation[0], deco.translation[1], deco.translation[2]);
-			GlStateManager.rotatef(deco.rotation[0], 1.0F, 0.0F, 0.0F);
-			GlStateManager.rotatef(deco.rotation[1], 0.0F, 1.0F, 0.0F);
-			GlStateManager.rotatef(deco.rotation[2], 0.0F, 0.0F, 1.0F);
-			GlStateManager.scalef(deco.scale[0], deco.scale[1], deco.scale[2]);
-			Minecraft.getInstance().getItemRenderer().renderItem(deco.stack, ItemCameraTransforms.TransformType.FIXED);
-			GlStateManager.popMatrix();
+			matrixStack.push();
+			matrixStack.translate(deco.translation[0], deco.translation[1], deco.translation[2]);
+			matrixStack.rotate(Vector3f.XP.rotationDegrees(deco.rotation[0]));
+			matrixStack.rotate(Vector3f.YP.rotationDegrees(deco.rotation[1]));
+			matrixStack.rotate(Vector3f.ZP.rotationDegrees(deco.rotation[2]));
+			matrixStack.scale(deco.scale[0], deco.scale[1], deco.scale[2]);
+			Minecraft.getInstance().getItemRenderer().renderItem(deco.stack, ItemCameraTransforms.TransformType.FIXED, combinedLightIn, combinedOverlayIn, matrixStack, bufferIn);
+			matrixStack.pop();
 		}
 
-		GlStateManager.popMatrix();
-		GlStateManager.enableLighting();
-		GlStateManager.popMatrix();
+		matrixStack.pop();
+	}
+
+	protected void drawNameplate(HeartTE te, String str, MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, int packedLightIn)
+	{
+		PlayerEntity player = Minecraft.getInstance().player;
+		if(player == null)
+			return;
+
+		double d0 = te.getDistanceSq(player.getPosX(), player.getPosY(), player.getPosZ());
+		if(!(d0 > 4096.0D))
+		{
+			matrixStackIn.push();
+			matrixStackIn.translate(0.5D, 1.25F, 0.5D);
+			matrixStackIn.rotate(Minecraft.getInstance().getRenderManager().getCameraOrientation());
+			matrixStackIn.scale(-0.025F, -0.025F, 0.025F);
+			Matrix4f matrix4f = matrixStackIn.getLast().getMatrix();
+			float f1 = Minecraft.getInstance().gameSettings.getTextBackgroundOpacity(0.25F);
+			int j = (int) (f1 * 255.0F) << 24;
+			FontRenderer fontrenderer = renderDispatcher.getFontRenderer();
+			float f2 = (float) (-fontrenderer.getStringWidth(str) / 2);
+			fontrenderer.renderString(str, f2, 0, 553648127, false, matrix4f, bufferIn, false, j, packedLightIn);
+			fontrenderer.renderString(str, f2, 0, -1, false, matrix4f, bufferIn, false, 0, packedLightIn);
+
+			matrixStackIn.pop();
+		}
 	}
 
 	public float getRotAdj(Direction dir)

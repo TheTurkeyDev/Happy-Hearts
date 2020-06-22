@@ -13,7 +13,7 @@ import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.StringTextComponent;
-import net.minecraftforge.fml.client.config.GuiSlider;
+import net.minecraftforge.fml.client.gui.widget.Slider;
 import org.lwjgl.opengl.GL11;
 
 public class HeartInputGui extends Screen
@@ -25,9 +25,9 @@ public class HeartInputGui extends Screen
 	private TextFieldWidget rewardField;
 	private HeartTE heartTE;
 
-	private GuiSlider redSlider;
-	private GuiSlider greenSlider;
-	private GuiSlider blueSlider;
+	private Slider redSlider;
+	private Slider greenSlider;
+	private Slider blueSlider;
 
 	private int left;
 	private int top;
@@ -54,13 +54,13 @@ public class HeartInputGui extends Screen
 		this.children.add(this.rewardField);
 
 		int color = heartTE.getHeartColor();
-		this.children.add(redSlider = new GuiSlider(left + 17, top + 35, 100, 25, "Red ", "", 0, 255, (color >> 16) & 0x000000FF, false, true, p_onPress_1_ ->
+		this.children.add(redSlider = new Slider(left + 17, top + 35, 100, 25, "Red ", "", 0, 255, (color >> 16) & 0x000000FF, false, true, p_onPress_1_ ->
 		{
 		}));
-		this.children.add(greenSlider = new GuiSlider(left + 17, top + 70, 100, 25, "Green ", "", 0, 255, (color >> 8) & 0x000000FF, false, true, p_onPress_1_ ->
+		this.children.add(greenSlider = new Slider(left + 17, top + 70, 100, 25, "Green ", "", 0, 255, (color >> 8) & 0x000000FF, false, true, p_onPress_1_ ->
 		{
 		}));
-		this.children.add(blueSlider = new GuiSlider(left + 17, top + 105, 100, 25, "Blue ", "", 0, 255, (color) & 0x000000FF, false, true, p_onPress_1_ ->
+		this.children.add(blueSlider = new Slider(left + 17, top + 105, 100, 25, "Blue ", "", 0, 255, (color) & 0x000000FF, false, true, p_onPress_1_ ->
 		{
 		}));
 	}
@@ -113,7 +113,7 @@ public class HeartInputGui extends Screen
 		GlStateManager.disableTexture();
 		GlStateManager.enableBlend();
 		GlStateManager.disableAlphaTest();
-		GlStateManager.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
+		GlStateManager.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA.param, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA.param, GlStateManager.SourceFactor.ONE.param, GlStateManager.DestFactor.ZERO.param);
 		GlStateManager.shadeModel(7425);
 		Tessellator tessellator = Tessellator.getInstance();
 		BufferBuilder bufferbuilder = tessellator.getBuffer();

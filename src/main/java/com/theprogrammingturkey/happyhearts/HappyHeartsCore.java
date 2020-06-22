@@ -33,7 +33,7 @@ public class HappyHeartsCore
 	public static final String MODID = "happyhearts";
 
 	public static HeartBlock HEART;
-	public static TileEntityType<?> HEART_TE;
+	public static TileEntityType<HeartTE> HEART_TE;
 
 	private static int packetID = 0;
 	public static final SimpleChannel CHANNEL = NetworkRegistry.ChannelBuilder.named(new ResourceLocation(HappyHeartsCore.MODID, "packets")).clientAcceptedVersions(a -> true).serverAcceptedVersions(a -> true).networkProtocolVersion(() -> FMLNetworkConstants.NETVERSION).simpleChannel();
@@ -41,7 +41,7 @@ public class HappyHeartsCore
 
 	public HappyHeartsCore()
 	{
-		DistExecutor.runWhenOn(Dist.CLIENT, () -> () -> ClientProxy.initClientStuff());
+		DistExecutor.runWhenOn(Dist.CLIENT, () -> () -> new ClientProxy());
 		FMLJavaModLoadingContext.get().getModEventBus().addListener(this::onCommonStart);
 		ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, Config.configSpec, MODID + "-client.toml");
 	}
@@ -55,7 +55,8 @@ public class HappyHeartsCore
 	@SubscribeEvent
 	public static void onTileEntityRegistry(RegistryEvent.Register<TileEntityType<?>> event)
 	{
-		event.getRegistry().register(HEART_TE = TileEntityType.Builder.create(HeartTE::new, HEART).build(null).setRegistryName(MODID, "tile_heart"));
+		HEART_TE = TileEntityType.Builder.create(HeartTE::new, HEART).build(null);
+		event.getRegistry().register(HEART_TE.setRegistryName(MODID, "tile_heart"));
 	}
 
 	@SubscribeEvent
